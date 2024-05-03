@@ -46,8 +46,8 @@ s = '( <s a0^> | [[<tether(0,0) spcr1 a0^* s*!i1 f^ s!i1> | <tether(10.88,0) spc
 
 ## Authors
 
-Matthew R. Lakin
-Sarika Kumar
+- Matthew R. Lakin
+- Sarika Kumar
 
 ## Acknowledgments
 
