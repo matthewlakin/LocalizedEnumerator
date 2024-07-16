@@ -28,6 +28,7 @@ class FreeSpecies(Species_Abstract):
 
     def __init__(self, sg):
         super().__init__()
+        self.speciesType = 'FREE_SPECIES'
         if sg.isConnected():
             sg.__convertToCanonicalForm__()
             self.sg = sg
@@ -49,27 +50,24 @@ class FreeSpecies(Species_Abstract):
         return self.sg.__metric__()
 
     def __eq__(self, other):
-        assert isinstance(self, FreeSpecies)
         if isinstance(other, FreeSpecies):
             return self.__metric__() == other.__metric__()
         else:
             return False
 
     def __ne__(self, other):
-        assert isinstance(self, FreeSpecies)
-        if isinstance(other, FreeSpecies):
-            return not(self.__eq__(other))
-        else:
-            return False
+        return not(self.__eq__(other))
 
     def __lt__(self, other):
         # NB: ordering only defined between strand graphs with compatible colors!
         # NB: ordering __CURRENTLY__ only defined for connected strand graphs!
-        assert isinstance(self, FreeSpecies)
-        if isinstance(other, FreeSpecies):
+        assert isinstance(other, Species_Abstract)
+        if other.speciesType == 'FREE_SPECIES': # Alternative would be to put both subclasses into one file.
             return self.sg.__metric__() < other.sg.__metric__()
-        else: ## Should only possibly be TileSpecies?
+        elif other.speciesType == 'TILE_SPECIES': # Alternative would be to put both subclasses into one file.
             return False
+        else:
+            assert False
 
     def __gt__(self, other):
         # NB: ordering only defined between strand graphs with compatible colors!
@@ -77,12 +75,20 @@ class FreeSpecies(Species_Abstract):
         # assert self.compatibleColors(other)
         # assert self.isConnected()
         # assert other.isConnected()
-        assert isinstance(self, FreeSpecies)
-        if isinstance(other, FreeSpecies):
+        assert isinstance(other, Species_Abstract)
+        if other.speciesType == 'FREE_SPECIES': # Alternative would be to put both subclasses into one file.
             return self.sg.__metric__() > other.sg.__metric__()
-        else: ## Should only possibly be TileSpecies?
+        elif other.speciesType == 'TILE_SPECIES': # Alternative would be to put both subclasses into one file.
             return True
+        else:
+            assert False
 
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
+            
     # Given a connected strand graph, convert it into a Species object
     def speciesFromStrandGraph(sg):
         assert sg.isConnected()
@@ -143,12 +149,10 @@ class FreeSpecies(Species_Abstract):
 
     #     return FreeSpecies(sg)
 
-# Given a connected strand graph, convert it into a Species object
-def speciesFromStrandGraph(sg):
-    assert sg.isConnected()
-    return FreeSpecies(sg)
-
-
+# # Given a connected strand graph, convert it into a Species object
+# def speciesFromStrandGraph(sg):
+#     assert sg.isConnected()
+#     return FreeSpecies(sg)
 
 # # Given a process, convert it into a list of free species (NB: there may be some duplicates?!)
 # def speciesListFromProcess(p, domainLengthStr):

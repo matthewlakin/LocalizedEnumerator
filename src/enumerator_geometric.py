@@ -415,22 +415,25 @@ class ReactionEnumerator_Geometric(ReactionEnumerator_Abstract):
         assert self.validSettings() 
         # Checking if the species are valid or not i.e. if they are free species or TileSpecies.
         if not self.isListOfSpecies(species_list):
-            lib.error('In ReactionEnumerator_Original.enumerateReactions: expected list of species as argument, but found: '+str(species_list))
+            lib.error('In ReactionEnumerator_Geometric.enumerateReactions: expected list of species as argument, but found: '+str(species_list))
         if not lib.distinct(species_list):
-            lib.error('In ReactionEnumerator_Original.enumerateReactions: expected all species in argument list to be unique, but found: '+str(species_list))
+            lib.error('In ReactionEnumerator_Geometric.enumerateReactions: expected all species in argument list to be unique, but found: '+str(species_list))
         allReactions = []
         species_processed = []
         species_pairs_processed_SORTED = []
         species_to_process = list(species_list)
+
+        # Do initial species plausibility check
+        for x in species_to_process:
+            if (not self.checkPlausibility(x)):
+                lib.error('In enumerateReactions: the following initial species was found to be implausible: '+str(x))
+        
         self.plausible_species = []
         self.implausible_species = []
         iterationcount = 1     
         while (species_to_process != []):
             x = species_to_process.pop(0) # Remove and return first species in the list
-            flag_in_plausible_species = self.checkPlausibility(x)
-            if (not flag_in_plausible_species):
-                continue
-
+            
             #change method name to Number of vertexes
             if x.size() > self.settings['maxComplexSize']:
                 lib.error('In enumerateReactions: check for possible polymers! Specified max complex size ('+str(self.settings['maxComplexSize'])+') exceeded by following species: '+str(x))
@@ -450,11 +453,11 @@ class ReactionEnumerator_Geometric(ReactionEnumerator_Abstract):
                       newReactions += reacs
                     else:
                         assert False
-                    species_pairs_processed_SORTED += [this_sorted_pair]                                                                                                                                                                            
+                    species_pairs_processed_SORTED += [this_sorted_pair]
             possiblyNewSpecies = []
 
             for r in newReactions:
-                assert r not in allReactions                                                                                                                                                                 
+                assert r not in allReactions
                 allReactions += [r]
                 possiblyNewSpecies += r.listOfSpeciesInvolved()
 

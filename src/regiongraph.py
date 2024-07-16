@@ -46,17 +46,32 @@ class Position:
     def __repr__(self):
         return str(self.s) +" "+ str(self.w) 
 
+    def __metric__(self):
+        return (self.s, self.w)
+    
     def __eq__(self, other):
-        return (self.s, self.w) == (other.s, other.w)
+        if isinstance(other, Position):
+            return self.__metric__() == other.__metric__()
+        else:
+            return False
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __lt__(self, other):
-        return (self.s, self.w) < (other.s, other.w)
+        assert isinstance(other, Position)
+        return self.__metric__() < other.__metric__()
 
     def __gt__(self, other):
-        return (self.s, self.w) > (other.s, other.w)
+        assert isinstance(other, Position)
+        return self.__metric__() > other.__metric__()
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
+
 
 ############################################################################################################
 # Class to represent regions implemented for representing condensing the graph and generating constraints.
@@ -77,11 +92,31 @@ class Region:
     def __repr__(self):
         return str(self.sites) + " " + str(self.comp_sites) + " " + str(self.totalNucleotideLength)
 
+    def __metric__(self):
+        return (self.sites, self.comp_sites, self.totalNucleotideLength)
+    
     def __eq__(self, other):
-        return (self.sites, self.comp_sites, self.totalNucleotideLength) == (other.sites, other.comp_sites, self.totalNucleotideLength)
+        if isinstance(other, Region):
+            return self.__metric__() == other.__metric__()
+        else:
+            return False
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def __lt__(self, other):
+        assert isinstance(other, Region)
+        return self.__metric__() < other.__metric__()
+
+    def __gt__(self, other):
+        assert isinstance(other, Region)
+        return self.__metric__() > other.__metric()
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
 
     def isBoundRegion(self):
         return False if self.comp_sites is None else True

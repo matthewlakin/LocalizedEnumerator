@@ -84,9 +84,12 @@ class Site(object):
     def __repr__(self):
         return '('+str(self.v)+','+str(self.n)+')'
 
+    def __metric__(self):
+        return (self.v, self.n)
+    
     def __eq__(self, other):
-        if self.v == other.v:
-            return self.n == other.n
+        if isinstance(other, Site):
+            return self.__metric__() == other.__metric__()
         else:
             return False
 
@@ -94,10 +97,18 @@ class Site(object):
         return not self.__eq__(other)
 
     def __lt__(self, other):
-        return (self.v, self.n) < (other.v, other.n)
+        assert isinstance(other, Site)
+        return self.__metric__() < other.__metric__()
 
     def __gt__(self, other):
-        return (self.v, self.n) > (other.v, other.n)
+        assert isinstance(other, Site)
+        return self.__metric__() > other.__metric__()
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
 
     def allFivePrimeSites(self):
         return [Site(self.v, n, self.nmax) for n in range(0, self.n)]
@@ -171,18 +182,32 @@ class Edge(object):
     def __repr__(self):
         return str(self.s1)+'->'+str(self.s2)
 
+    def __metric__(self):
+        return (self.s1, self.s2)
+
     def __eq__(self, other):
-        return (self.s1, self.s2) == (other.s1, other.s2)
+        if isinstance(other, Edge):
+            return self.__metric__() == other.__metric__()
+        else:
+            return False
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __lt__(self, other):
-        return (self.s1, self.s2) < (other.s1, other.s2)
+        assert isinstance(other, Edge)
+        return self.__metric__() < other.__metric__()
     
     def __gt__(self, other):
-        return (self.s1, self.s2) > (other.s1, other.s2)
+        assert isinstance(other, Edge)
+        return self.__metric__() > other.__metric__()
 
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
+    
     # Return a new version of this edge, relabeled according to the supplied mapping, "vmap".
     # Vmap is a list of indexes. The LIST INDEX of each value in the list
     # is the value that it should be replaced with.
@@ -381,10 +406,13 @@ class StrandGraph(object):
     def __eq__(self, other):
         # NB: equality only defined between strand graphs with compatible colors!
         # NB: equality __CURRENTLY__ only defined for connected strand graphs!
-        assert self.compatibleColors(other) 
-        assert self.isConnected() 
-        assert other.isConnected()
-        return self.__metric__() == other.__metric__()
+        if isinstance(other, StrandGraph):
+            assert self.compatibleColors(other) 
+            assert self.isConnected() 
+            assert other.isConnected()
+            return self.__metric__() == other.__metric__()
+        else:
+            return False
 
     def __ne__(self, other):
         # NB: inequality only defined between strand graphs with compatible colors!
@@ -394,6 +422,7 @@ class StrandGraph(object):
     def __lt__(self, other):
         # NB: ordering only defined between strand graphs with compatible colors!
         # NB: ordering __CURRENTLY__ only defined for connected strand graphs!
+        assert isinstance(other, StrandGraph)
         assert self.compatibleColors(other)
         assert self.isConnected()
         assert other.isConnected()
@@ -402,10 +431,17 @@ class StrandGraph(object):
     def __gt__(self, other):
         # NB: ordering only defined between strand graphs with compatible colors!
         # NB: ordering __CURRENTLY__ only defined for connected strand graphs!
+        assert isinstance(other, StrandGraph)
         assert self.compatibleColors(other)
         assert self.isConnected()
         assert other.isConnected()
         return self.__metric__() > other.__metric__()
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
 
     # Relabel this strand graph according to the supplied mapping, "vmap".
     # Vmap is a list of indexes. The LIST INDEX of each value in the list

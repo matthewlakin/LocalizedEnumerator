@@ -26,50 +26,65 @@ import math
 from constraintchecker_sampling import *
 import sys
 from timeit import default_timer as timer
+from constants import *
 
-enumeratorGeometric = ReactionEnumerator_Geometric({'name':'adjacent_detailed',
-                                                    'debug': False,
-                                                    'enumerationMode':'detailed',
-                                                    'maxComplexSize': math.inf,
-                                                    'threeWayMode':'adjacent',
-                                                    'unbindingMode':'adjacent',
-                                                    'rate' : {'bind': 0.003, 'unbind' : 0.1, 'migrate' : 1.0, 'displace' : 1.0},
-                                                    'constraintChecker': ConstraintChecker_Sampling(seed=11)})
+defaultSeed = 11
 
-def process_input(s, domainLengthStr):
-    print("PARAMETERS:")
-    print("ssDNA length per nucleotide (nm): " + str(SS_LENGTH))
-    print("dsDNA length per nucleotide (nm): " + str(DS_LENGTH))
-    print("Nick angle upper bound constraints active? "+str(NICKED_FLAG))
-    if(NICKED_FLAG):
-        print("Nick angle upper bound (degrees): "+ str(NICKEDANGLE_UPPER_BOUND))
+def mkEnumeratorGeometric(seed):
+    return ReactionEnumerator_Geometric({'name':'adjacent_detailed',
+                                         'debug': False,
+                                         'enumerationMode':'detailed',
+                                         'maxComplexSize': math.inf,
+                                         'threeWayMode':'adjacent',
+                                         'unbindingMode':'adjacent',
+                                         'rate' : {'bind': 0.003, 'unbind' : 0.1, 'migrate' : 1.0, 'displace' : 1.0},
+                                         'constraintChecker': ConstraintChecker_Sampling(seed=seed)})
+
+def process_input(s, domainLengthStr, enumeratorGeometric, verbose=True):
+    if verbose:
+        print('PARAMETERS:')
+        printMainConstants()
     p = sgparser.parse(s)
-    print()
     species_list = speciesFromProcess(p, domainLengthStr)
-    print("INITIAL SPECIES:")
-    for index, species in enumerate(species_list):
-        print(f'sp_{index}:')
-        species.displayRepresentation()
-    print()    
+    if verbose:
+        print()
+        print("INITIAL SPECIES:")
+        for index, species in enumerate(species_list):
+            print(f'sp_{index}:')
+            species.displayRepresentation()
+        print()
     crn = enumeratorGeometric.enumerateReactions(species_list) # Actually do the enumeration!
-    print('Found '+str(len(crn.species))+' species and '+str(len(crn.reactions))+' reactions in total.')
-    print()
+    if verbose:
+        print('Found '+str(len(crn.species))+' species and '+str(len(crn.reactions))+' reactions in total.')
+        print()
     return crn
 
-def localized_enumeration(s, domainLengthStr):
+########################################################################
+
+# Entry point for Chatterjee (2017) localized strand displacement examples
+def chatterjee_circuit(dist_between_hairpins=10.88, seed=defaultSeed, verbose=True):
+    domainLengthStr = 'toeholdDomain spcr1 length 5 toeholdDomain spcr2 length 5 longDomain s length 12 toeholdDomain a0 length 6 toeholdDomain f length 6 toeholdDomain x length 6 longDomain y length 12'
+    s = '( <s a0^> | [[<tether(0,0) spcr1 a0^* s*!i1 f^ s!i1> | <tether('+ str(dist_between_hairpins) +',0) spcr2 x^* s*!i3 y^ s!i3> ]] | <s!i2 x^ s*!i2 f^*> | <s*!i4 y^*> | <s!i4> )'
     start_time = timer()
-    print(f'INPUT STRINGS:\n{domainLengthStr}\n{s}\n')
-    crn = process_input(s, domainLengthStr)
-    crn.displayRepresentation()
+    if verbose:
+        print(f'INPUT STRINGS:\n{domainLengthStr}\n{s}\n')
+    enumeratorGeometric = mkEnumeratorGeometric(seed)
+    crn = process_input(s, domainLengthStr, enumeratorGeometric, verbose=verbose)
+    if verbose:
+        crn.displayRepresentation()
     end_time = timer()
     elapsed_time = end_time - start_time
-    print('Time taken to enumerate reactions for settings '+enumeratorGeometric.settings['name']+': '+str(elapsed_time)+' seconds')
-    print()
+    if verbose:
+        print('Time taken to enumerate reactions for settings '+enumeratorGeometric.settings['name']+': '+str(elapsed_time)+' seconds')
+        print()
+    return crn
 
-def enumerate_robot_cargo(s, domainLengthStr, robot, cargo):
+# Entry point for Thubagere (2017) cargo-sorting robot examples
+def enumerate_robot_cargo(s, domainLengthStr, robot, cargo, seed=defaultSeed, verbose=True):
     start_time = timer()
     print(f'INPUT STRINGS:\n{domainLengthStr}\n{s}\n')
-    crn = process_input(s, domainLengthStr)
+    enumeratorGeometric = mkEnumeratorGeometric(seed)
+    crn = process_input(s, domainLengthStr, seed, verbose=verbose)
     robot_sg = strandGraphFromProcess(sgparser.parse(robot), domainLengthStr)
     cargo_sg = strandGraphFromProcess(sgparser.parse(cargo), domainLengthStr)
     robot_strand = robot_sg.colors_info[0]['strand_type']
@@ -79,8 +94,5 @@ def enumerate_robot_cargo(s, domainLengthStr, robot, cargo):
     elapsed_time = end_time - start_time
     print('Time taken to enumerate reactions for settings '+enumeratorGeometric.settings['name']+': '+str(elapsed_time)+' seconds')
     print()
+    return crn
 
-def chatterjee_circuit(dist_between_hairpins=10.88):
-    domainLengthStr = 'toeholdDomain spcr1 length 5 toeholdDomain spcr2 length 5 longDomain s length 12 toeholdDomain a0 length 6 toeholdDomain f length 6 toeholdDomain x length 6 longDomain y length 12'
-    s = '( <s a0^> | [[<tether(0,0) spcr1 a0^* s*!i1 f^ s!i1> | <tether('+ str(dist_between_hairpins) +',0) spcr2 x^* s*!i3 y^ s!i3> ]] | <s!i2 x^ s*!i2 f^*> | <s*!i4 y^*> | <s!i4> )'
-    localized_enumeration(s, domainLengthStr)

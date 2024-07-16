@@ -24,9 +24,11 @@ class ConstraintChecker_Abstract(ABC):
 
     def __init__(self):
         super().__init__()
-        
+
     #
     # ABSTRACT METHOD:
-    
+    # Given a strand graph, determine whether the structure is geometrically plausible.
+    #
+    @abstractmethod
     def isPlausible(self, sg):
-        pass
+        raise NotImplementedError

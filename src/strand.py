@@ -53,8 +53,10 @@ class Strand(object):
         return (self.domains, self.tether_orientation, self.tether_coord)
 
     def __eq__(self, other):
-        assert isinstance(other, Strand)
-        return (self.__metric__() == other.__metric__())
+        if isinstance(other, Strand):
+            return (self.__metric__() == other.__metric__())
+        else:
+            return False
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -67,6 +69,12 @@ class Strand(object):
         assert isinstance(other, Strand)
         return (self.__metric__() > other.__metric__())
 
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
+    
     def strandType(self):
         return Strand([d.stripBond() for d in self.domains], self.isTethered, self.tether_orientation, self.tether_coord)
 

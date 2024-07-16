@@ -24,9 +24,9 @@
 #            - NB: we could do away with this if can generalize graph enumeration to non-connected strand graphs...
 #
 
-from process import *
+# from process import *
 from abc import ABC, abstractmethod
-from process import *
+# from process import *
 # from strandgraph import StrandGraph, connectedStrandGraphsFromProcess
    
 ###############################################################################################
@@ -40,24 +40,47 @@ class Species_Abstract(ABC):
     def __init__(self):
         super().__init__()
       
-    # ABSTRACT METHOD:
-    # Given a list of distinct species,
+    @abstractmethod
+    def __eq__(self, other):
+        raise NotImplementedError
 
-    # Given a connected strand graph, convert it into a Species object
-    def speciesFromStrandGraph(sg):
-        pass
+    @abstractmethod
+    def __ne__(self, other):
+        raise NotImplementedError
+
+    @abstractmethod
+    def __lt__(self, other):
+        raise NotImplementedError
+
+    @abstractmethod
+    def __gt__(self, other):
+        raise NotImplementedError
+
+    @abstractmethod
+    def __le__(self, other):
+        raise NotImplementedError
+
+    @abstractmethod
+    def __ge__(self, other):
+        raise NotImplementedError
+
+    # #@abstractmethod
+    # def speciesFromStrandGraph(sg):
+    #     raise NotImplementedError
     
-    def speciesfromprocess(self, item):
-        pass
+    # #@abstractmethod
+    # def speciesfromprocess(self, item):
+    #     raise NotImplementedError
 
+    @abstractmethod
     def isListOfSpecies(self, specieslist):
-        pass
-
-    def connectedComponents(self):
-        pass
-
-    def size(self):
-        pass
-
+        raise NotImplementedError
     
+    @abstractmethod
+    def connectedComponents(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def size(self):
+        raise NotImplementedError
 

@@ -31,3 +31,17 @@ NICKED_FLAG = True
 
 # Maximum number of sampling attempts
 SAMPLING_TRIALS = 1000
+
+# Print some/all constants
+def printMainConstants(splitter=' '):
+    print(f'ssDNA length per nucleotide (nm):{splitter}{DS_LENGTH}')
+    print(f'dsDNA length per nucleotide (nm):{splitter}{SS_LENGTH}')
+    print(f'Nick angle upper bound constraints active?{splitter}{NICKED_FLAG}')
+    if NICKED_FLAG:
+        print(f'Nick angle upper bound (degrees):{splitter}{NICKEDANGLE_UPPER_BOUND}')
+    print(f'Max number of sampling trials:{splitter}{SAMPLING_TRIALS}')
+
+def printAllConstants(splitter=' '):
+    print(f'ssDNA persistence length (nm):{splitter}{SSDNA_PERSISTENCE_LENGTH}')
+    print(f'dsDNA persistence length (nm):{splitter}{DSDNA_PERSISTENCE_LENGTH}')
+    printMainConstants()

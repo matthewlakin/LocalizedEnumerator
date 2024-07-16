@@ -55,16 +55,27 @@ class Domain(object):
         return output
 
     def __eq__(self, other):
-        return self.__str__() == other.__str__()
+        if isinstance(other, Domain):
+            return self.__str__() == other.__str__()
+        else:
+            return False
     
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __lt__(self, other):
+        assert isinstance(other, Domain)
         return self.__str__() < other.__str__()
 
     def __gt__(self, other):
+        assert isinstance(other, Domain)
         return self.__str__() > other.__str__()
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
     
     def getComplement(self):
         return Domain(self.name, self.istoehold, not self.complemented, self.bond, domainNucleotideLength=self.domainNucleotideLength)

@@ -29,6 +29,7 @@ class TileSpecies(Species_Abstract):
 
     def __init__(self, sg_list):
         super().__init__()
+        self.speciesType = 'TILE_SPECIES'
         assert isinstance(sg_list, list)
         self.tiles_sg = []
         self.changedGraph = None
@@ -37,7 +38,7 @@ class TileSpecies(Species_Abstract):
                 conn.__convertToCanonicalForm__()
                 self.tiles_sg.append(conn)
             else:
-                errMsg = 'Tried to create a Species object from the following non-connected strand graph:'+os.linesep+str(self)
+                errMsg = 'Tried to create a TileSpecies object from the following non-connected strand graph:'+os.linesep+str(self)
                 lib.error(errMsg)
             #print('ERROR: '+str(errMsg)) # Commented this out for testing purposes. Ultimately want to crash if this happens!
 
@@ -48,41 +49,37 @@ class TileSpecies(Species_Abstract):
                 if((c['tether'][0] is not None) and (c['tether'][1] is not None)):
                     tethered_flag = True
             if(not tethered_flag):
-                errMsg = 'Tried to create a Tile Species object from the following connected strand graph that has no tethers:'+os.linesep+str(self)
+                errMsg = 'Tried to create a TileSpecies object from the following connected strand graph that has no tethers:'+os.linesep+str(self)
                 lib.error(errMsg)                
         self.tiles_sg.sort()
 
     def __metric__(self):
-        assert isinstance(self, TileSpecies)
         metric_sg = []
         for tile_species in self.tiles_sg:
             metric_sg.append(tile_species.__metric__())
         return metric_sg
 
     def __eq__(self, other):
-        assert isinstance(self, TileSpecies)
         if isinstance(other, TileSpecies):
-            return (self.__metric__() == other.__metric__())
+            return self.__metric__() == other.__metric__()
         else:
             return False
         
     def __ne__(self, other):
-        assert isinstance(self, TileSpecies)
-        if isinstance(other, TileSpecies):
-            return not(self.__eq__(other))
-        else:
-            return False
+        return not(self.__eq__(other))
 
     def __lt__(self, other):
         # NB: ordering only defined between strand graphs with compatible colors!
         # NB: ordering __CURRENTLY__ only defined for connected strand graphs!
         # assert self.isConnected()
         # assert other.isConnected()
-        assert isinstance(self, TileSpecies)
-        if isinstance(other, TileSpecies):
+        assert isinstance(other, Species_Abstract)
+        if other.speciesType == 'TILE_SPECIES': # Alternative would be to put both subclasses into one file.
             return self.__metric__() < other.__metric__()
-        else: ## Should only possibly be FreeSpecies?
+        elif other.speciesType == 'FREE_SPECIES': # Alternative would be to put both subclasses into one file.
             return True
+        else:
+            assert False
 
     def __gt__(self, other):
         # NB: ordering only defined between strand graphs with compatible colors!
@@ -90,11 +87,19 @@ class TileSpecies(Species_Abstract):
         # assert self.compatibleColors(other)
         # assert self.isConnected()
         # assert other.isConnected()
-        assert isinstance(self, TileSpecies)
-        if isinstance(other, TileSpecies):
+        assert isinstance(other, Species_Abstract)
+        if other.speciesType == 'TILE_SPECIES': # Alternative would be to put both subclasses into one file.
             return self.__metric__() > other.__metric__()
-        else: ## Should only possibly be FreeSpecies?
+        elif other.speciesType == 'FREE_SPECIES': # Alternative would be to put both subclasses into one file.
             return False
+        else:
+            assert False
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
 
     def isListOfSpecies(self, xs):
         if not isinstance(xs, list):

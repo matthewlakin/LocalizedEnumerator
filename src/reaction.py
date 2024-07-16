@@ -27,6 +27,7 @@ from enumerator_geometric import *
 from strandgraph import *
 import sgparser
 import lib
+import math
 
 ###############################################################################################
 
@@ -94,19 +95,30 @@ class Reaction(object):
     #     return stringOfReactants + stringOfRate + stringOfProducts
     
     def __metric__(self):
-        return (self.reactants, self.fwdrate, -1.0 if self.bwdrate is None else self.bwdrate, self.products)
+        return (self.reactants, self.fwdrate, -math.inf if self.bwdrate is None else self.bwdrate, self.products)
     
     def __eq__(self, other):
-        return self.__metric__() == other.__metric__()
+        if isinstance(other, Reaction):
+            return self.__metric__() == other.__metric__()
+        else:
+            return False
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __lt__(self, other):
+        assert isinstance(other, Reaction)
         return self.__metric__() < other.__metric__()
 
     def __gt__(self, other):
+        assert isinstance(other, Reaction)
         return self.__metric__() > other.__metric__()
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
 
     def tryToCombineWith(self, other):
         if (self.reactants == other.reactants) and (self.products == other.products):
@@ -115,16 +127,16 @@ class Reaction(object):
             if self.bwdrate is None and other.bwdRate is None:
                 newBwdRate = None
             else:
-                newBwdRate = (0.0 if self.fwdrate is None else self.fwdrate) + (0.0 if self.bwdrate is Noe else self.bwdrate)
-            newMetadata = dict(self.metadata)  ## <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ??????
-            newMetadata.update(other.metadata) ## <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ??????
+                newBwdRate = (0.0 if self.fwdrate is None else self.fwdrate) + (0.0 if self.bwdrate is None else self.bwdrate)
+            newMetadata = dict(self.metadata)  ## ?????? Unclear what is the right thing to do for any "metadata" ??????
+            newMetadata.update(other.metadata) ## ?????? Unclear what is the right thing to do for any "metadata" ??????
             return Reaction(self.reactants, newFwdRate, self.products, bwdrate=newBwdRate, metadata=newMetadata)
         elif (self.reactants == other.products) and (self.products == other.reactants):
             # Found two oppositely oriented reactions: combine them!
             newFwdRate = self.fwdrate + (0.0 if other.bwdrate is None else other.bwdrate)
             newBwdRate = (0.0 if self.bwdrate is None else self.bwdrate) + other.fwdrate
-            newMetadata = dict(self.metadata)  ## <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ??????
-            newMetadata.update(other.metadata) ## <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ?????? <<<<<< ??????
+            newMetadata = dict(self.metadata)  ## ?????? Unclear what is the right thing to do for any "metadata" ??????
+            newMetadata.update(other.metadata) ## ?????? Unclear what is the right thing to do for any "metadata" ??????
             return Reaction(self.reactants, newFwdRate, self.products, bwdrate=newBwdRate, metadata=newMetadata)
         else:
             return None
@@ -135,14 +147,6 @@ class Reaction(object):
             if x not in res:
                 res += [x]
         return res
-
-    def checkAndGetColorsInfo(self):
-        xs = self.listOfSpeciesInvolved()
-        assert xs != []
-        the_colors_info = xs[0].tiles_sg[0].colors_info
-        for x in xs[1:]:
-            assert x.tiles_sg[0].colors_info == the_colors_info
-        return the_colors_info
 
     # Make a graphical representation of this reaction!
     # Returns the graphviz object. This allows them to be rendered in a Jupyter notebook via display(), for example.
@@ -195,11 +199,10 @@ class Reaction(object):
             useGraphviz = False
         if useGraphviz:
             def displayRepresentationOfSpeciesList(xs):
-                sgcomp = makeEmptyStrandGraph(self.checkAndGetColorsInfo())
+                print('---')
                 for x in xs:
-                    for sg in x.tiles_sg:
-                        sgcomp = sgcomp.compose(sg)
-                sgcomp.displayRepresentation()
+                    x.displayRepresentation()
+                    print('---')
             spacer = '==================================================================='
             print(spacer)
             print('REACTANTS:')
@@ -215,5 +218,5 @@ class Reaction(object):
             print(spacer)
         else:
             print(self)
-    
+
 ###############################################################################################
