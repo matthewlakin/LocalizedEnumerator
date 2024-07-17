@@ -51,4 +51,4 @@ s = '( <s a0^> | [[<tether(0,0) spcr1 a0^* s*!i1 f^ s!i1> | <tether(10.88,0) spc
 
 ## Acknowledgments
 
-This material is based upon work supported by the National Science Foundation under Grants 1518861 and 1814906.
+This material is based upon work supported by the National Science Foundation under Grants 1518861, 1814906, and 2044838.
