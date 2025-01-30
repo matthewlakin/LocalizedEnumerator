@@ -67,7 +67,8 @@ class CRN_Modified(CRN):
         res += os.linesep
         res += mkTitle('REACTIONS:')
         for r in self.reactions:
-            res += (self.modifiedPrettyPrintReaction(r) + os.linesep)
+            #res += (self.modifiedPrettyPrintReaction(r) + os.linesep)
+            res += (self.prettyPrintReaction(r) + os.linesep)
         return res
     
     def displayModifiedRepresentation(self, robot, cargo):

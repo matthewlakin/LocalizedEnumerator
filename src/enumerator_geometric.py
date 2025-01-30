@@ -467,4 +467,3 @@ class ReactionEnumerator_Geometric(ReactionEnumerator_Abstract):
                     species_to_process += [pns]
             iterationcount += 1 
         return CRN_Modified(species_processed, allReactions)
-    

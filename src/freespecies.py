@@ -119,6 +119,9 @@ class FreeSpecies(Species_Abstract):
         assert isinstance(other, FreeSpecies)
         return  self.sg.compose(other.sg)
 
+    def printAsProcess(self, useNewlines=False):
+        return self.sg.printAsProcess(useNewlines=useNewlines)
+
     # def speciesFromStrandGraph(self, old_strand_graph, new_strand_graph):
     #     free_species_list = []
     #     tethered_species_list = []
@@ -159,7 +162,5 @@ class FreeSpecies(Species_Abstract):
 #     assert isinstance(p, Process)
 #     assert p.wellFormed()
 #     return [FreeSpecies(sg) for sg in connectedStrandGraphsFromProcess(p.untethered, domainLengthStr)]
-
-
 
 # ###############################################################################################

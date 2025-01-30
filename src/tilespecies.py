@@ -129,4 +129,8 @@ class TileSpecies(Species_Abstract):
             num += sp.numVertexes()
         return num
 
+    def printAsProcess(self, useNewlines=False):
+        p = Process([TileContent(self.tiles_sg)])
+        return p.compactString(useNewlines=useNewlines)
+
 # ###############################################################################################

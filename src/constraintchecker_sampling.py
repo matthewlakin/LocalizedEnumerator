@@ -93,6 +93,8 @@ class ConstraintChecker_Sampling(ConstraintChecker_Abstract):
                     sampling_info = {'sampling_unsuccessful_trials': unsuccessful_trials}
                     species_sampling_info.append((sp, sampling_info))
                     return (False, species_sampling_info)
+            else:
+                 assert False
         self.debugPrint("UnSatisfiable!!!!---Sampling")
         self.debugPrint("number of unsuccessful trials  " + str(unsuccessful_trials))
         # sampling_info = {'sampling_unsuccessful_trials': unsuccessful_trials}
@@ -223,7 +225,6 @@ class ConstraintChecker_Sampling(ConstraintChecker_Abstract):
         return sampled_structures, ssDNA_regions, dsDNA_regions, unprocessed_regions
 
     def checkConstraints(self, rg, sampled_structures):
-
         if(self.checkDistanceConstraints(rg.edge_list, sampled_structures) and self.checkAngleConstraints(rg, sampled_structures)):
 
             self.debugPrint("Plotting the coordinates from the sampled structures...")

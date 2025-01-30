@@ -370,6 +370,7 @@ class StrandGraph(object):
         return output
 
     def toProcess(self):
+        # NB: currently doesn't work if strand graph contains any tethers
         # assert self.isValid()
         strands = [self.colors_info[self.vertex_colors[vdx]]['strand_type'].copyStrand() for vdx in self.getVertexNumbers()]
         nextBondIdx = 1
@@ -385,6 +386,7 @@ class StrandGraph(object):
         return p
 
     def printAsProcess(self, useNewlines=False):
+        # NB: currently doesn't work if strand graph contains any tethers
         return self.toProcess().compactString(useNewlines=useNewlines)
 
     def __metric__(self):

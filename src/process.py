@@ -66,7 +66,7 @@ class Process(object):
                     output += ' | '
                 if(idx == 0):
                     output += '[[ '
-                output += str(s)
+                output += str(s) # This works now, but produces ugly output as this is actually a strand graph!
             if i == len(self.tethered) - 1:
                 output += ' ]]'
                 if useNewlines:
