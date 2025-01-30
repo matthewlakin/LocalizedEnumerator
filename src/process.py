@@ -55,7 +55,7 @@ class Process(object):
         output = '( '
         for (idx,s) in enumerate(self.untethered):
             if idx > 0:
-                output += '| '
+                output += ' | '
             output += str(s)
             if idx == len(self.untethered) - 1:
                 if useNewlines:
